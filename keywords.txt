@@ -1,0 +1,13 @@
+WiFiWire 	KEYWORD1	WiFiWire
+WWire 		KEYWORD1 	WiFiWire
+
+begin							KEYWORD2
+beginTransmission KEYWORD2
+requestFrom 			KEYWORD2
+endTransmission 	KEYWORD2
+available 				KEYWORD2
+read 							KEYWORD2
+write 						KEYWORD2
+update 						KEYWORD2
+setupUDP 					KEYWORD2
+
