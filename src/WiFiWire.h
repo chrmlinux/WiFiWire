@@ -20,7 +20,7 @@ enum {WIFIWIRE_SERVER = 0, WIFIWIRE_CLIENT};
 class WiFiWire {
 
   public:
-  
+
     WiFiWire(int);
     int16_t begin(void);
     int16_t beginTransmission(int);
@@ -30,14 +30,14 @@ class WiFiWire {
     int16_t read(void);
     int16_t write(uint8_t);
     int16_t update(void);
-    
+
   private:
 
     AsyncUDP _udp;
     const char *_ssid = "WifiWire";
     const char *_pass = "#WifiWire#";
     int _serverKind = WIFIWIRE_SERVER;
-		int16_t sendUDP(void);
+    int16_t sendUDP(void);
 
 };
 #endif

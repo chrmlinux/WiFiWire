@@ -12,16 +12,16 @@ uint16_t _readPos = 0;
 //===========================================
 void setLocal(uint8_t *dt, uint16_t cnt)
 {
-	memcpy(_recv, dt, cnt);
-	_recvCnt = cnt;
-	_readPos = 0;
+  memcpy(_recv, dt, cnt);
+  _recvCnt = cnt;
+  _readPos = 0;
 }
 
 uint8_t getLocal(void)
 {
-	uint8_t rtn = _recv[_readPos];
-	_readPos ++;
-	return rtn;
+  uint8_t rtn = _recv[_readPos];
+  _readPos ++;
+  return rtn;
 }
 
 
@@ -44,9 +44,9 @@ int16_t WiFiWire::begin(void)
   int16_t rtn = 0;
   WiFi.disconnect(true, true);
 
-	//===========================================
-	// IPAddress set
-	//===========================================
+  //===========================================
+  // IPAddress set
+  //===========================================
   IPAddress serverIp = IPAddress(192, 168, 4, 2);
   IPAddress     gwIp = IPAddress(192, 168, 4, 1);
   IPAddress   subnet = IPAddress(255, 255, 255, 0);
@@ -54,9 +54,9 @@ int16_t WiFiWire::begin(void)
 
   if (_serverKind == WIFIWIRE_SERVER) {
 
-		//===========================================
-		// Setver
-		//===========================================
+    //===========================================
+    // Setver
+    //===========================================
     WiFi.softAPConfig(serverIp, gwIp, subnet);
     WiFi.softAP(_ssid, _pass);
     _udp.listen(serverPort);
@@ -68,9 +68,9 @@ int16_t WiFiWire::begin(void)
 
   } else {
 
-		//===========================================
-		// Client
-		//===========================================
+    //===========================================
+    // Client
+    //===========================================
     WiFi.mode(WIFI_STA);
     WiFi.begin(_ssid, _pass);
     if (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -84,107 +84,107 @@ int16_t WiFiWire::begin(void)
     Serial.print(":"); Serial.println(serverPort);
   }
 
-	//===========================================
-	// data on recv set
-	//===========================================
+  //===========================================
+  // data on recv set
+  //===========================================
   _udp.onPacket([](AsyncUDPPacket packet) {
 
     if (packet.length()) {
-			
-			//===========================================
-			// on packet ?
-			//===========================================
+
+      //===========================================
+      // on packet ?
+      //===========================================
       uint8_t send[SEND_BUF_MAX] = {0};
       uint16_t sendCnt = 0;
       uint8_t *recv = NULL;
-			uint8_t cmd = 0;
+      uint8_t cmd = 0;
 
       recv = packet.data();
-			cmd = recv[0];
+      cmd = recv[0];
 
       switch (cmd) {
 
-				//===========================================
-				// requestFrom
-				//-------------------------------------------
-				// Client -> local recv
-				//===========================================
+        //===========================================
+        // requestFrom
+        //-------------------------------------------
+        // Client -> local recv
+        //===========================================
         case 'F':
           {
             int adrs = recv[1];
             int cnt =  recv[2];
-						setLocal(&recv[3], cnt);
+            setLocal(&recv[3], cnt);
           }
           break;
-          
-				//===========================================
-				// beginTransmission
-				//-------------------------------------------
-				// Server -> Wire
-				//===========================================
+
+        //===========================================
+        // beginTransmission
+        //-------------------------------------------
+        // Server -> Wire
+        //===========================================
         case 'b':
           Wire.beginTransmission(recv[1]);
           break;
 
-				//===========================================
-				// requestFrom
-				//-------------------------------------------
-				// Server -> Wire -> Client
-				//===========================================
+        //===========================================
+        // requestFrom
+        //-------------------------------------------
+        // Server -> Wire -> Client
+        //===========================================
         case 'f':
           {
             int adrs = recv[1];
             int len = recv[2];
             int rcnt = 0;
-						sendCnt = 0;
+            sendCnt = 0;
 
-						//===========================================
-						// Server -> Wire
-						//===========================================
+            //===========================================
+            // Server -> Wire
+            //===========================================
             Wire.requestFrom(adrs, len);
             send[sendCnt] =  'F'; sendCnt ++;
             send[sendCnt] = adrs; sendCnt ++;
             send[sendCnt] =  len; sendCnt ++;
-            
-						//===========================================
-						// is Wire.available ?
-						//===========================================
+
+            //===========================================
+            // is Wire.available ?
+            //===========================================
             while (1) {
               if (Wire.available() >= len) break;
               rcnt++;
             }
-            
-						//===========================================
-						// Wire.read
-						//===========================================
+
+            //===========================================
+            // Wire.read
+            //===========================================
             for (int i = 0; i < len; i++) {
               send[sendCnt] = Wire.read();
               sendCnt ++;
             }
-            
-						//===========================================
-						// Server -> Client
-						//===========================================
+
+            //===========================================
+            // Server -> Client
+            //===========================================
             // 'F',adrs,cnt,high,low
             packet.write(send, sendCnt);
             sendCnt = 0;
           }
           break;
 
-				//===========================================
-				// endTransmission
-				//-------------------------------------------
-				// Server -> Wire
-				//===========================================
+        //===========================================
+        // endTransmission
+        //-------------------------------------------
+        // Server -> Wire
+        //===========================================
         case 'e':
           Wire.endTransmission(recv[1] ? true : false);
           break;
 
-				//===========================================
-				// write
-				//-------------------------------------------
-				// Server -> Wire
-				//===========================================
+        //===========================================
+        // write
+        //-------------------------------------------
+        // Server -> Wire
+        //===========================================
         case 'w':
           Wire.write(recv[1]);
           break;
@@ -215,7 +215,7 @@ int16_t WiFiWire::update(void)
 int16_t WiFiWire::beginTransmission(int adrs)
 {
   uint16_t rtn = 0;
-	_sendCnt = 0;
+  _sendCnt = 0;
   _send[_sendCnt] =  'b'; _sendCnt ++;
   _send[_sendCnt] = adrs; _sendCnt ++;
   sendUDP();
@@ -230,7 +230,7 @@ int16_t WiFiWire::beginTransmission(int adrs)
 int16_t WiFiWire::requestFrom(int adrs, int cnt)
 {
   uint16_t rtn = 0;
-	_sendCnt = 0;
+  _sendCnt = 0;
   _send[_sendCnt] =  'f'; _sendCnt ++;
   _send[_sendCnt] = adrs; _sendCnt ++;
   _send[_sendCnt] =  cnt; _sendCnt ++;
@@ -246,7 +246,7 @@ int16_t WiFiWire::requestFrom(int adrs, int cnt)
 int16_t WiFiWire::endTransmission(bool flag)
 {
   uint16_t rtn = 0;
-	_sendCnt = 0;
+  _sendCnt = 0;
   _send[_sendCnt] =  'e'; _sendCnt ++;
   _send[_sendCnt] = flag ? true : false; _sendCnt ++;
   sendUDP();
@@ -272,7 +272,7 @@ int16_t WiFiWire::available(void)
 int16_t WiFiWire::read(void)
 {
   uint16_t rtn = getLocal();
-	_recvCnt --;
+  _recvCnt --;
   return rtn;
 }
 
@@ -284,7 +284,7 @@ int16_t WiFiWire::read(void)
 int16_t WiFiWire::write(uint8_t dt)
 {
   uint16_t rtn = 0;
-	_sendCnt = 0;
+  _sendCnt = 0;
   _send[_sendCnt] = 'w'; _sendCnt ++;
   sendUDP();
   return rtn;
